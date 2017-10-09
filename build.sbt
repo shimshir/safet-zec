@@ -4,6 +4,8 @@ version := "1.0"
 
 scalaVersion := "2.12.3"
 
+resolvers += "repo.jenkins-ci.org" at "http://repo.jenkins-ci.org/public"
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10",
@@ -12,6 +14,8 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.1",
   "io.spray" %% "spray-json" % "1.3.3",
   "org.reactivemongo" %% "reactivemongo" % "0.12.6",
+  "org.kohsuke" % "github-api" % "1.89",
+  "commons-io" % "commons-io" % "1.4" % Provided,
 
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4",
 
