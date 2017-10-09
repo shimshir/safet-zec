@@ -1,6 +1,10 @@
 package de.admir.safetzec.rendering
 
-import reactivemongo.api.MongoConnection
+import java.util.concurrent.ConcurrentHashMap
+
+import com.github.simplyscala.MongoEmbedDatabase
+import de.admir.safetzec.models.TemplateModel
+import reactivemongo.api.{MongoConnection, MongoDriver}
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.bson.document
 
@@ -8,21 +12,57 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 trait TemplateStore {
-  def saveTemplate(name: String, value: String): Future[Unit]
+  def saveTemplate(templateModel: TemplateModel): Future[String]
 
-  def findTemplate(name: String): Future[Option[String]]
+  def findTemplate(name: String): Future[Option[TemplateModel]]
+}
+
+class InMemoryTemplateStore() extends TemplateStore {
+  private val templateMap = new ConcurrentHashMap[String, TemplateModel]()
+
+  def saveTemplate(templateModel: TemplateModel): Future[String] = {
+    templateMap.put(templateModel.name, templateModel)
+    Future.successful(templateModel.name)
+  }
+
+  def findTemplate(name: String): Future[Option[TemplateModel]] = Future.successful(Option(templateMap.get(name)))
 }
 
 class MongoTemplateStore(mongoConnection: MongoConnection)(implicit ec: ExecutionContext) extends TemplateStore {
 
-  private val templateDbFut = mongoConnection.database("template")
-  private val fmTmplCollFut: Future[BSONCollection] = templateDbFut.map(_.collection("freemarker"))
+  import de.admir.safetzec.models.MongoProtocols._
 
-  def saveTemplate(name: String, value: String): Future[Unit] = {
-    fmTmplCollFut.flatMap(_.insert(document("name" -> name, "value" -> value))).map(_ => ())
+  private val templateDbFut = mongoConnection.database("safetzec")
+  private val tmplCollFut: Future[BSONCollection] = templateDbFut.map(_.collection("templates"))
+
+  // TODO: Handle updates with PUT requests in the route, not here
+  def saveTemplate(templateModel: TemplateModel): Future[String] = {
+    findTemplate(templateModel.name).flatMap {
+      case Some(_) =>
+        updateTemplate(templateModel)
+      case None =>
+        createTemplate(templateModel)
+    }
   }
 
-  def findTemplate(name: String): Future[Option[String]] = {
-    fmTmplCollFut.flatMap(_.find(document("name" -> name)).one).map(_.flatMap(_.getAs[String]("value")))
+  private def updateTemplate(templateModel: TemplateModel): Future[String] = {
+    tmplCollFut.flatMap(_.update(document("name" -> templateModel.name), templateModel).map(_ => templateModel.name))
+  }
+
+  private def createTemplate(templateModel: TemplateModel): Future[String] = {
+    tmplCollFut.flatMap(_.insert(templateModel).map(_ => templateModel.name))
+  }
+
+  def findTemplate(name: String): Future[Option[TemplateModel]] = {
+    tmplCollFut.flatMap(_.find(document("name" -> name)).one[TemplateModel])
+  }
+}
+
+object DefaultMongoTemplateStore extends MongoEmbedDatabase {
+  def createConnection(port: Int): MongoConnection = {
+    mongoStart(port)
+    val driver = MongoDriver()
+    val parsedUri = MongoConnection.parseURI(s"mongodb://localhost:$port")
+    parsedUri.map(driver.connection).get
   }
 }
