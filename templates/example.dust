@@ -1,0 +1,6 @@
+<h2>Hello {name}, you have {count} new messages.</h2>
+<ul>
+    {#messages}{~n}
+    <li>{.}</li>
+    {/messages}
+</ul>
