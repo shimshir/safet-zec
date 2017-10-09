@@ -1,0 +1,1 @@
+<p>some string 1 ${whatever}</p>
