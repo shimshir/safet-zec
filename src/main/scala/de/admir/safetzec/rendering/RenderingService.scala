@@ -2,6 +2,7 @@ package de.admir.safetzec.rendering
 
 import de.admir.safetzec.models.EngineEnum.EngineEnum
 import de.admir.safetzec.models.{RenderRequest, TemplateData}
+import de.admir.safetzec.templates.TemplateStore
 import spray.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}

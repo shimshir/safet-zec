@@ -15,7 +15,9 @@ libraryDependencies ++= Seq(
 
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4",
 
-  "org.mockito" % "mockito-all" % "1.10.19" % "test",
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+  "org.mockito" % "mockito-all" % "1.10.19" % Test,
+  "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
 )
+
+fork in Test := true

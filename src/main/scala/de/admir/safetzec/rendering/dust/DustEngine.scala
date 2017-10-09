@@ -12,7 +12,6 @@ class DustEngine() extends RenderingEngine {
   private val scriptEngine = scriptEngineManager.getEngineByName("nashorn")
 
   scriptEngine.eval(io.Source.fromResource("js/dust-full.js").mkString)
-  scriptEngine.eval("dust.optimizers.format = function(ctx, node) { return node };")
 
   private val renderScript =
     """

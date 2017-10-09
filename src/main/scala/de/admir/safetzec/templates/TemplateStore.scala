@@ -1,11 +1,11 @@
-package de.admir.safetzec.rendering
+package de.admir.safetzec.templates
 
 import java.util.concurrent.ConcurrentHashMap
 
 import com.github.simplyscala.MongoEmbedDatabase
 import de.admir.safetzec.models.TemplateModel
-import reactivemongo.api.{MongoConnection, MongoDriver}
 import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.api.{MongoConnection, MongoDriver}
 import reactivemongo.bson.document
 
 import scala.concurrent.{ExecutionContext, Future}

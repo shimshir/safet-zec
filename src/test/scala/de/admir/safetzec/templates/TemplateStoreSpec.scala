@@ -1,14 +1,14 @@
-package de.admir.safetzec.rendering
+package de.admir.safetzec.templates
 
 import com.github.simplyscala.{MongoEmbedDatabase, MongodProps}
+import de.admir.safetzec.models.EngineEnum._
 import de.admir.safetzec.models.TemplateModel
 import org.scalatest._
 import reactivemongo.api.{MongoConnection, MongoDriver}
 
 import scala.concurrent.Await
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import de.admir.safetzec.models.EngineEnum._
+import scala.concurrent.duration._
 
 class TemplateStoreSpec extends FlatSpec with Matchers with MongoEmbedDatabase with BeforeAndAfter {
   var mongoProps: MongodProps = _
