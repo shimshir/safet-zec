@@ -1,6 +1,7 @@
 package de.admir.safetzec.web
 
 import akka.actor.ActorSystem
+import akka.event.slf4j.SLF4JLogging
 import akka.http.scaladsl.server.{Directive0, Directives, Route}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
@@ -33,28 +34,28 @@ trait CorsSupport extends Directives {
     }
 }
 
-class HttpServer(config: Config)(implicit actorSystem: ActorSystem, materializer: Materializer, ec: ExecutionContext) extends CorsSupport {
+class HttpServer(config: Config)(implicit actorSystem: ActorSystem, materializer: Materializer, ec: ExecutionContext) extends CorsSupport with SLF4JLogging {
   private val serverConfig = config.getConfig("application.server")
   private val host = serverConfig.getString("host")
   private val port = serverConfig.getInt("port")
 
   def start(combinedRoute: Route): Unit = {
-    //log.info(s"Starting server on port: $port")
+    log.info(s"Starting server on port: $port")
     Http()
       .bindAndHandle(corsHandler(combinedRoute), host, port)
       .onComplete {
         case Success(binding) =>
-          //log.info(s"Started server on: ${binding.localAddress.toString}")
+          log.info(s"Started server on: ${binding.localAddress.toString}")
         case Failure(sst) =>
-          //log.error("Failed to start server", sst)
+          log.error("Failed to start server", sst)
           actorSystem
             .terminate()
             .onComplete {
               case Success(_) =>
-                //log.info("Terminated actorSystem, exiting system with code 1")
+                log.info("Terminated actorSystem, exiting system with code 1")
                 System.exit(1)
               case Failure(att) =>
-                //log.error("Failed to terminate actorSystem, exiting system with code 2", att)
+                log.error("Failed to terminate actorSystem, exiting system with code 2", att)
                 System.exit(2)
             }
       }

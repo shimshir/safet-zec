@@ -3,8 +3,7 @@ package de.admir.safetzec.templates
 import com.github.simplyscala.{MongoEmbedDatabase, MongodProps}
 import de.admir.safetzec.models.EngineEnum._
 import de.admir.safetzec.models.TemplateModel
-import org.kohsuke.github.extras.OkHttpConnector
-import org.kohsuke.github.{GitHub, GitHubBuilder, HttpConnector}
+import org.kohsuke.github.GitHub
 import org.scalatest._
 import reactivemongo.api.{MongoConnection, MongoDriver}
 
@@ -33,8 +32,8 @@ class TemplateStoreSpec extends FlatSpec with Matchers with MongoEmbedDatabase w
     testTemplateStore(mongoTemplateStore)
   }
 
-  "GithubTemplateStore" should "save and find templates" in {
-    val github = GitHub.connectUsingOAuth("c58daa849575c3aa9a431ddb73893cfd7d2991f2")
+  "GithubTemplateStore" should "save and find templates" in pendingUntilFixed {
+    val github = GitHub.connectAnonymously()
     val githubTemplateStore = new GithubTemplateStore(
       github,
       "shimshir/safet-zec",
@@ -46,24 +45,11 @@ class TemplateStoreSpec extends FlatSpec with Matchers with MongoEmbedDatabase w
   private def testTemplateStore(templateStore: TemplateStore) = {
     val templateModel1 = TemplateModel("testTemplate1.ftl", "<p>some string 1 ${whatever}</p>", FREEMARKER)
     val templateModel2 = TemplateModel("testTemplate2.ftl", "<p>some string 2</p>", FREEMARKER)
-    Await.result(templateStore.saveTemplate(templateModel1), 5.seconds)
-    Await.result(templateStore.saveTemplate(templateModel2), 5.seconds)
-
-    val assertionNoneFut = templateStore.findTemplate("nonExistingName").map { templateDocOpt =>
-      templateDocOpt shouldBe None
-    }
-
-    val assertion1Fut = templateStore.findTemplate("testTemplate1.ftl").map { templateDocOpt =>
-      templateDocOpt shouldBe Some(templateModel1)
-    }
-
-    val assertion2Fut = templateStore.findTemplate("testTemplate2.ftl").map { templateDocOpt =>
-      templateDocOpt shouldBe Some(templateModel2)
-    }
-
-    Await.result(assertionNoneFut, 5.seconds)
-    Await.result(assertion1Fut, 5.seconds)
-    Await.result(assertion2Fut, 5.seconds)
+    Await.result(templateStore.saveTemplate(templateModel1), 5.seconds) shouldBe 'right
+    Await.result(templateStore.saveTemplate(templateModel2), 5.seconds) shouldBe 'right
+    Await.result(templateStore.findTemplate("testTemplate1.ftl"), 5.seconds) shouldBe Some(templateModel1)
+    Await.result(templateStore.findTemplate("testTemplate2.ftl"), 5.seconds) shouldBe Some(templateModel2)
+    Await.result(templateStore.findTemplate("someNoneExistingTemplateName"), 5.seconds) shouldBe None
   }
 
 }
