@@ -9,7 +9,7 @@ import de.admir.safetzec.models.EngineEnum._
 import de.admir.safetzec.rendering.dust.DustEngine
 import de.admir.safetzec.rendering.freemarker.FreemarkerEngine
 import de.admir.safetzec.rendering.handlebars.HandlebarsEngine
-import de.admir.safetzec.templates.MongoTemplateStore
+import de.admir.safetzec.templates.InMemoryTemplateStore
 
 object Main extends App {
   implicit val actorSystem = ActorSystem("safet-zec")
@@ -20,7 +20,7 @@ object Main extends App {
 
   val httpServer = new HttpServer(config)
 
-  val templateStore = new MongoTemplateStore()
+  val templateStore = new InMemoryTemplateStore()
 
   val renderingService = new RenderingService(
     Map(

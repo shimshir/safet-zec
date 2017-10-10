@@ -20,16 +20,17 @@ class HandlebarsEngineSpec extends FlatSpec with Matchers with MockitoSugar {
       """.stripMargin.parseJson.asJsObject
 
     val template =
-      """|Hello {{name}}, you have {{newMessageAmount}} new messages. They are:
-         |{{#messages ~}}
-         |  {{this}}
-         |{{/messages ~}}
+      """
+        |Hello {{name}}, you have {{newMessageAmount}} new messages. They are:
+        |{{#messages ~}}
+        |  {{this}}
+        |{{/messages ~}}
       """.stripMargin.trim
 
     val result = fmEngine.render(data, template)
-    result shouldBe a [Right[_, String]]
+    result shouldBe a[Right[_, String]]
     val renderedStr = result.right.value
     val actualLines = renderedStr.split("\n").map(_.trim)
-    actualLines should contain inOrderOnly ("Hello Admir, you have 3 new messages. They are:", "Whats up?", "You won the lottery!", "Lunch at 2 pm")
+    actualLines should contain inOrderOnly("Hello Admir, you have 3 new messages. They are:", "Whats up?", "You won the lottery!", "Lunch at 2 pm")
   }
 }

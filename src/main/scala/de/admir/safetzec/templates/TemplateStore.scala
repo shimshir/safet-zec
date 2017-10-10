@@ -37,7 +37,7 @@ class MongoTemplateStore(mongoConnection: MongoConnection)(implicit ec: Executio
   private val templateDbFut = mongoConnection.database("safetzec")
   private val tmplCollFut: Future[BSONCollection] = templateDbFut.map(_.collection("templates"))
 
-  def this() {
+  def this()(implicit ec: ExecutionContext) {
     this(DefaultMongoTemplateStore.createConnection(12345))
   }
 

@@ -7,6 +7,7 @@
 
     <logger name="de.admir" level="debug"/>
     <logger name="reactivemongo" level="error"/>
+    <logger name="freemarker.runtime" level="off"/>
 
     <root level="warn">
         <appender-ref ref="console"/>

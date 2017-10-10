@@ -1,0 +1,21 @@
+{
+  "name": "safet-zec-ui",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.16.2",
+    "bootstrap": "^3.3.7",
+    "brace": "^0.10.0",
+    "jumpsuit": "^2.1.2",
+    "react": "^15.6.1",
+    "react-ace": "^5.4.0",
+    "react-bootstrap": "^0.31.2",
+    "react-dom": "^15.6.1",
+    "react-scripts": "1.0.10"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
+  }
+}
