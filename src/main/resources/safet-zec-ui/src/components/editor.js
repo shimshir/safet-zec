@@ -1,7 +1,7 @@
 import React from 'react'
 import {Component, State, Actions} from 'jumpsuit'
 import AceEditor from 'react-ace'
-import {Row, Col} from "react-bootstrap"
+import {Row, Col, Button} from "react-bootstrap"
 import axios from 'axios'
 import Safet from './safet'
 import Select from 'react-select'
@@ -113,19 +113,27 @@ const Editor = Component(
                     <Row>
                         <Col xs={6}>
                             <h3>Enter your data</h3>
-                            <AceEditor
-                                value={this.props.dataEditorText}
-                                width="100%"
-                                height="275px"
-                                fontSize={14}
-                                mode="json"
-                                theme="tomorrow_night"
-                                onChange={this.changeData}
-                                name="data-editor"
-                                style={{zIndex: '0'}}
-                                editorProps={{$blockScrolling: true}}
-                                setOptions={{showInvisibles: true}}
-                            />
+                            <div>
+                                <div style={{width: '98%', display: 'table-cell'}}>
+                                    <AceEditor
+                                        value={this.props.dataEditorText}
+                                        width="100%"
+                                        height="275px"
+                                        fontSize={14}
+                                        mode="json"
+                                        theme="tomorrow_night"
+                                        onChange={this.changeData}
+                                        name="data-editor"
+                                        style={{zIndex: '0'}}
+                                        editorProps={{$blockScrolling: true}}
+                                        setOptions={{showInvisibles: true}}
+                                    />
+                                </div>
+                                <div style={{width: '2%', display: 'table-cell', verticalAlign: 'top', height: '275px'}}>
+                                    <Button style={{width: '100%', height: '100%', padding: 'inherit'}}>+</Button>
+                                </div>
+                            </div>
+                            <Button style={{width: 'calc(100% - 20px)', height: '12px', padding: '0'}}/>
                         </Col>
                         <Col xs={6}>
                             <h3 style={{display: "inline-block"}}>Define your template</h3>
@@ -136,9 +144,24 @@ const Editor = Component(
                                     value={this.props.engine}
                                     options={
                                         [
-                                            {value: 'FREEMARKER', label: <div><img style={{height: '16px'}} src='http://freemarker.org/favicon.png' alt='freemarker'/>  Freemarker</div>},
-                                            {value: 'HANDLEBARS', label: <div><img style={{height: '16px'}} src='http://handlebarsjs.com/images/favicon.png' alt='handlebars'/>  Handlebars</div>},
-                                            {value: 'DUST', label: <div><img style={{height: '16px'}} src='https://d30y9cdsu7xlg0.cloudfront.net/png/915985-200.png' alt='dust'/>  Dust</div>}
+                                            {
+                                                value: 'FREEMARKER',
+                                                label: <div><img style={{height: '16px'}}
+                                                                 src='http://freemarker.org/favicon.png'
+                                                                 alt='freemarker'/> Freemarker</div>
+                                            },
+                                            {
+                                                value: 'HANDLEBARS',
+                                                label: <div><img style={{height: '16px'}}
+                                                                 src='http://handlebarsjs.com/images/favicon.png'
+                                                                 alt='handlebars'/> Handlebars</div>
+                                            },
+                                            {
+                                                value: 'DUST',
+                                                label: <div><img style={{height: '16px'}}
+                                                                 src='https://d30y9cdsu7xlg0.cloudfront.net/png/915985-200.png'
+                                                                 alt='dust'/> Dust</div>
+                                            }
                                         ]}
                                     onChange={this.changeEngine}
                                 />

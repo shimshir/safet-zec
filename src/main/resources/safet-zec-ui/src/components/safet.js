@@ -16,7 +16,7 @@ class Safet extends React.Component {
         const radius = 100;
 
         const currentTheta = Math.atan2(top_c - currentTop, right_c - currentRight);
-        const nextTheta = currentTheta + 0.025;
+        const nextTheta = currentTheta + 0.03;
         const nextTop = top_c - (Math.sin(nextTheta) * radius);
         const nextRight = right_c - (Math.cos(nextTheta) * radius);
 
@@ -36,7 +36,7 @@ class Safet extends React.Component {
 
     render() {
         return (
-            <div style={{position: "absolute", zIndex: "0", right: `${parseInt(this.state.right, 10)}px`, top: `${parseInt(this.state.top, 10)}px`}}>
+            <div style={{position: "absolute", zIndex: "1", right: `${parseInt(this.state.right, 10)}px`, top: `${parseInt(this.state.top, 10)}px`}}>
                 <img style={{width: "150px"}} src={safetJpg} alt="Safet Zec"/>
             </div>
         );
