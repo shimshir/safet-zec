@@ -10,8 +10,8 @@ import scala.util.Try
 class HandlebarsEngine() extends RenderingEngine with Json2JMap {
   private val handlebars = new Handlebars()
 
-  def render(data: JsObject, templateValue: String, nameOpt: Option[String] = None): Throwable Either String = {
+  def render(data: JsObject, templateValue: String, nameOpt: Option[String] = None): Throwable Either String = Try {
     val template = handlebars.compileInline(templateValue)
-    Try(template.apply(json2JMap(data))).toEither
-  }
+    template.apply(json2JMap(data))
+  }.toEither
 }
