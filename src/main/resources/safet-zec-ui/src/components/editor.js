@@ -1,7 +1,7 @@
 import React from 'react'
 import {Component, State, Actions} from 'jumpsuit'
 import AceEditor from 'react-ace'
-import {Row, Col} from "react-bootstrap"
+import {Row, Col, Button, Navbar, Nav, NavItem, NavDropdown, MenuItem} from "react-bootstrap"
 import axios from 'axios'
 import Safet from './safet'
 import Select from 'react-select'
@@ -47,7 +47,14 @@ const EditorState = State(
             dataEditorText: "",
             templateEditorText: "",
             resultEditorText: "",
-            engine: "FREEMARKER"
+            engine: "FREEMARKER",
+            dataEditorHiddenClass: '',
+            templateEditorHiddenClass: '',
+            resultEditorHiddenClass: '',
+            dataEditorHeight: '275px',
+            templateEditorHeight: '275px',
+            dataEditorWidth: 6,
+            templateEditorWidth: 6
         },
         setDataEditorText(state, dataEditorText) {
             return {...state, dataEditorText};
@@ -60,6 +67,27 @@ const EditorState = State(
         },
         setEngine(state, engine) {
             return {...state, engine};
+        },
+        setDataEditorWidth(state, size) {
+            return {...state, dataEditorWidth: size}
+        },
+        setTemplateEditorWidth(state, size) {
+            return {...state, templateEditorWidth: size}
+        },
+        setDataEditorHeight(state, size) {
+            return {...state, dataEditorHeight: size}
+        },
+        setTemplateEditorHeight(state, size) {
+            return {...state, templateEditorHeight: size}
+        },
+        setDataEditorHiddenClass(state, className) {
+            return {...state, dataEditorHiddenClass: className}
+        },
+        setTemplateEditorHiddenClass(state, className) {
+            return {...state, templateEditorHiddenClass: className}
+        },
+        setResultEditorHiddenClass(state, className) {
+            return {...state, resultEditorHiddenClass: className}
         }
     }
 );
@@ -105,62 +133,167 @@ const Editor = Component(
                 }
             }
         },
+        toggleDataEditorWidth() {
+            if (this.props.templateEditorHiddenClass === 'hidden') {
+                Actions.setDataEditorWidth(6);
+                Actions.setTemplateEditorHiddenClass('');
+            } else {
+                Actions.setDataEditorWidth(12);
+                Actions.setTemplateEditorHiddenClass('hidden');
+            }
+        },
+        toggleTemplateEditorWidth() {
+            if (this.props.dataEditorHiddenClass === 'hidden') {
+                Actions.setTemplateEditorWidth(6);
+                Actions.setDataEditorHiddenClass('');
+            } else {
+                Actions.setTemplateEditorWidth(12);
+                Actions.setDataEditorHiddenClass('hidden');
+            }
+        },
+        toggleDataEditorHeight() {
+            if (this.props.dataEditorHeight === '275px') {
+                Actions.setDataEditorHeight('550px');
+            } else {
+                Actions.setDataEditorHeight('275px');
+            }
+        },
+        toggleTemplateEditorHeight() {
+            if (this.props.templateEditorHeight === '275px') {
+                Actions.setTemplateEditorHeight('550px');
+            } else {
+                Actions.setTemplateEditorHeight('275px');
+            }
+        },
         render() {
             return (
                 <div>
                     {/*<Safet initialTop={100} initialRight={0}/>*/}
-                    <h1 style={{textAlign: "center"}}>Safet Zec</h1>
                     <Row>
-                        <Col xs={6}>
-                            <h3>Enter your data</h3>
-                            <AceEditor
-                                value={this.props.dataEditorText}
-                                width="100%"
-                                height="275px"
-                                fontSize={14}
-                                mode="json"
-                                theme="tomorrow_night"
-                                onChange={this.changeData}
-                                name="data-editor"
-                                style={{zIndex: '0'}}
-                                editorProps={{$blockScrolling: true}}
-                                setOptions={{showInvisibles: true}}
-                            />
-                        </Col>
-                        <Col xs={6}>
-                            <h3 style={{display: "inline-block"}}>Define your template</h3>
-                            <div style={{marginTop: "20px", display: 'inline-block', float: 'right', width: '180px'}}>
-                                <Select
-                                    style={{cursor: 'pointer'}}
-                                    name="form-field-name"
-                                    value={this.props.engine}
-                                    options={
-                                        [
-                                            {value: 'FREEMARKER', label: <div><img style={{height: '16px'}} src='http://freemarker.org/favicon.png' alt='freemarker'/>  Freemarker</div>},
-                                            {value: 'HANDLEBARS', label: <div><img style={{height: '16px'}} src='http://handlebarsjs.com/images/favicon.png' alt='handlebars'/>  Handlebars</div>},
-                                            {value: 'DUST', label: <div><img style={{height: '16px'}} src='https://d30y9cdsu7xlg0.cloudfront.net/png/915985-200.png' alt='dust'/>  Dust</div>}
-                                        ]}
-                                    onChange={this.changeEngine}
-                                />
+                        <Col xs={this.props.dataEditorWidth} className={this.props.dataEditorHiddenClass}>
+                            <Navbar className="editor-navbar">
+                                <Navbar.Header>
+                                    <Navbar.Brand>
+                                        Data
+                                    </Navbar.Brand>
+                                </Navbar.Header>
+                            </Navbar>
+                            <div style={{height: this.props.dataEditorHeight}}>
+                                <div style={{height: '100%', width: '100%', display: 'inline-block'}}>
+                                    <AceEditor
+                                        value={this.props.dataEditorText}
+                                        width="100%"
+                                        height="100%"
+                                        fontSize={14}
+                                        mode="json"
+                                        theme="tomorrow_night"
+                                        onChange={this.changeData}
+                                        name="data-editor"
+                                        style={{zIndex: '0'}}
+                                        editorProps={{$blockScrolling: true}}
+                                        setOptions={{showInvisibles: true}}
+                                    />
+                                </div>
+                                <div style={{
+                                    width: '12px',
+                                    display: 'inline-block',
+                                    verticalAlign: 'top',
+                                    height: this.props.dataEditorHeight,
+                                    position: 'absolute'
+                                }}>
+                                    <Button id="vertical-data-button" style={{width: '100%', height: '100%', padding: 'inherit'}}
+                                            onClick={this.toggleDataEditorWidth}/>
+                                </div>
                             </div>
-                            <AceEditor
-                                value={this.props.templateEditorText}
-                                width="100%"
-                                height="275px"
-                                fontSize={14}
-                                mode="ftl"
-                                theme="tomorrow_night"
-                                onChange={this.changeTemplate}
-                                name="template-editor"
-                                style={{zIndex: '0'}}
-                                editorProps={{$blockScrolling: true}}
-                                setOptions={{showInvisibles: true}}
-                            />
+                            <Button id="horizontal-data-button" style={{width: '100%', height: '12px', padding: '0', verticalAlign: 'top'}}
+                                    onClick={this.toggleDataEditorHeight}/>
+                        </Col>
+                        <Col xs={this.props.templateEditorWidth} className={this.props.templateEditorHiddenClass}>
+                            <Navbar className="editor-navbar">
+                                <Navbar.Header>
+                                    <Navbar.Brand>
+                                        Template
+                                    </Navbar.Brand>
+                                </Navbar.Header>
+                                <Nav>
+                                    <NavItem>Save</NavItem>
+                                    <NavItem>Load</NavItem>
+                                </Nav>
+                                <Nav pullRight>
+                                    <NavItem className="engine-selector-navitem">
+                                        <div style={{width: '150px', marginRight: '10px'}}>
+                                            <Select
+                                                style={{cursor: 'pointer'}}
+                                                name="form-field-name"
+                                                value={this.props.engine}
+                                                options={
+                                                    [
+                                                        {
+                                                            value: 'FREEMARKER',
+                                                            label: <div><img style={{height: '16px'}}
+                                                                             src='http://freemarker.org/favicon.png'
+                                                                             alt='freemarker'/> Freemarker</div>
+                                                        },
+                                                        {
+                                                            value: 'HANDLEBARS',
+                                                            label: <div><img style={{height: '16px'}}
+                                                                             src='http://handlebarsjs.com/images/favicon.png'
+                                                                             alt='handlebars'/> Handlebars</div>
+                                                        },
+                                                        {
+                                                            value: 'DUST',
+                                                            label: <div><img style={{height: '16px'}}
+                                                                             src='https://d30y9cdsu7xlg0.cloudfront.net/png/915985-200.png'
+                                                                             alt='dust'/> Dust</div>
+                                                        }
+                                                    ]}
+                                                onChange={this.changeEngine}
+                                            />
+                                        </div>
+                                    </NavItem>
+                                </Nav>
+                            </Navbar>
+                            <div style={{height: this.props.templateEditorHeight}}>
+                                <div style={{
+                                    width: '12px',
+                                    display: 'inline-block',
+                                    verticalAlign: 'top',
+                                    height: '275px',
+                                    position: 'absolute',
+                                    marginLeft: '-12px'
+                                }}>
+                                    <Button id="vertical-template-button" style={{width: '100%', height: this.props.templateEditorHeight, padding: 'inherit'}}
+                                            onClick={this.toggleTemplateEditorWidth}/>
+                                </div>
+                                <div style={{height: '100%', width: '100%', display: 'inline-block'}}>
+                                    <AceEditor
+                                        value={this.props.templateEditorText}
+                                        width="100%"
+                                        height="100%"
+                                        fontSize={14}
+                                        mode="ftl"
+                                        theme="tomorrow_night"
+                                        onChange={this.changeTemplate}
+                                        name="template-editor"
+                                        style={{zIndex: '0'}}
+                                        editorProps={{$blockScrolling: true}}
+                                        setOptions={{showInvisibles: true}}
+                                    />
+                                </div>
+                            </div>
+                            <Button id="horizontal-template-button" style={{width: '100%', height: '12px', padding: '0', verticalAlign: 'top'}}
+                                    onClick={this.toggleTemplateEditorHeight}/>
                         </Col>
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <h3>Result</h3>
+                            <Navbar className="editor-navbar">
+                                <Navbar.Header>
+                                    <Navbar.Brand>
+                                        Result
+                                    </Navbar.Brand>
+                                </Navbar.Header>
+                            </Navbar>
                             <AceEditor
                                 value={this.props.resultEditorText}
                                 width="100%"

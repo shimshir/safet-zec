@@ -1,0 +1,48 @@
+body {
+    background-color: #f9f9f9;
+}
+
+@media (min-width: 1200px) {
+    .container.content-container {
+        width: 1370px;
+    }
+}
+
+div.container.content-container {
+    background-color: #ffffff;
+    border-radius: .25rem;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .25);
+    padding: 2rem 2rem 1rem;
+    position: relative;
+    border: 1px solid #e8e8e8;
+}
+
+.main-navbar > .container {
+    width: auto;
+    padding: 0 20px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .25);
+}
+
+.editor-navbar > .container {
+    width: auto;
+    padding: 0;
+}
+
+.editor-navbar li.engine-selector-navitem > a {
+    padding-top: 7px;
+    padding-bottom: 5px;
+}
+
+.editor-navbar {
+    margin: 0;
+    border-style: none;
+}
+
+.navbar {
+    border-radius: 0;
+    background-color: #ffffff;
+}
+
+.btn-default {
+    background-color: #e6e6e6;
+}
