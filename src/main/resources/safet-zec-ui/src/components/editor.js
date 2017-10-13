@@ -1,7 +1,7 @@
 import React from 'react'
 import {Component, State, Actions} from 'jumpsuit'
 import AceEditor from 'react-ace'
-import {Row, Col, Button, Navbar, Nav, NavItem, NavDropdown, MenuItem} from "react-bootstrap"
+import {Row, Col, Button, Navbar, Nav, NavItem, NavDropdown, MenuItem, FormControl} from "react-bootstrap"
 import axios from 'axios'
 import Safet from './safet'
 import Select from 'react-select'
@@ -218,6 +218,13 @@ const Editor = Component(
                                 <Nav>
                                     <NavItem>Save</NavItem>
                                     <NavItem>Load</NavItem>
+                                    <NavItem className="template-name-input">
+                                        <FormControl
+                                            type="text"
+                                            value="template.xyz"
+                                            onChange={x => console.log(x)}
+                                        />
+                                    </NavItem>
                                 </Nav>
                                 <Nav pullRight>
                                     <NavItem className="engine-selector-navitem">

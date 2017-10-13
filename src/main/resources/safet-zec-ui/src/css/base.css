@@ -33,6 +33,10 @@ div.container.content-container {
     padding-bottom: 5px;
 }
 
+li.template-name-input > a {
+    padding: 9px 0 0 0;
+}
+
 .editor-navbar {
     margin: 0;
     border-style: none;
