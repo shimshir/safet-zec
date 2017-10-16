@@ -7,6 +7,8 @@ import de.admir.safetzec.rendering.RenderingEngine
 import freemarker.template.{Configuration, Template, Version}
 import spray.json._
 
+import java.util.{Map => JMap}
+
 import scala.util.Try
 
 class FreemarkerEngine() extends RenderingEngine with Json2JMap {
@@ -16,7 +18,8 @@ class FreemarkerEngine() extends RenderingEngine with Json2JMap {
     val template = new Template(nameOpt.getOrElse("placeholderName"), new StringReader(templateStr), fmCfg)
     val stringWriter = new StringWriter()
     val result = Try {
-      template.process(json2JMap(data), stringWriter)
+      val dataJMap: JMap[String, Object] = json2JMap(data)
+      template.process(dataJMap, stringWriter)
       stringWriter.toString
     }.toEither
     stringWriter.close()

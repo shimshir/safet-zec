@@ -2,11 +2,10 @@ package de.admir.safetzec.rendering.freemarker
 
 import org.scalatest._
 import org.scalatest.EitherValues._
-import org.scalatest.mockito.MockitoSugar
 import spray.json._
 
 
-class FreemarkerEngineSpec extends FlatSpec with Matchers with MockitoSugar {
+class FreemarkerEngineSpec extends FlatSpec with Matchers {
 
   "render" should "render the given data and template" in {
     val fmEngine = new FreemarkerEngine()

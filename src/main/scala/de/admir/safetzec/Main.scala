@@ -22,14 +22,13 @@ object Main extends App {
 
   val templateStore = new InMemoryTemplateStore()
 
-  val renderingService = new RenderingService(
-    Map(
-      FREEMARKER -> new FreemarkerEngine(),
-      HANDLEBARS -> new HandlebarsEngine(),
-      DUST -> new DustEngine()
-    ),
-    templateStore
+  val supportedEngines = Map(
+    FREEMARKER -> new FreemarkerEngine(),
+    HANDLEBARS -> new HandlebarsEngine(),
+    DUST -> new DustEngine()
   )
+
+  val renderingService = new RenderingService(supportedEngines, templateStore)
   val apiRoute = new ApiRoute(renderingService, templateStore)
 
   httpServer.start(apiRoute.route)

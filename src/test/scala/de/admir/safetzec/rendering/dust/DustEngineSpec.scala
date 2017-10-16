@@ -2,11 +2,10 @@ package de.admir.safetzec.rendering.dust
 
 import org.scalatest._
 import org.scalatest.EitherValues._
-import org.scalatest.mockito.MockitoSugar
 import spray.json._
 
 
-class DustEngineSpec extends FlatSpec with Matchers with MockitoSugar {
+class DustEngineSpec extends FlatSpec with Matchers {
   "render" should "render the given data and template" in {
     val dustEngine = new DustEngine()
 

@@ -33,11 +33,11 @@ class TemplateStoreSpec extends FlatSpec with Matchers with MongoEmbedDatabase w
   }
 
   "GithubTemplateStore" should "save and find templates" in pendingUntilFixed {
-    val github = GitHub.connectAnonymously()
+    val anonGithub = GitHub.connectAnonymously()
     val githubTemplateStore = new GithubTemplateStore(
-      github,
-      "shimshir/safet-zec",
-      "templates"
+      github = anonGithub,
+      repoName = "shimshir/safet-zec",
+      templateFolder = "templates"
     )
     testTemplateStore(githubTemplateStore)
   }

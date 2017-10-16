@@ -7,14 +7,13 @@ import spray.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RenderingService(engineMap: Map[EngineEnum, RenderingEngine], templateStore: TemplateStore)(implicit ec: ExecutionContext) {
-  def renderByName(data: JsObject, name: String): Future[Option[Throwable Either String]] = {
+class RenderingService(supportedEngines: Map[EngineEnum, RenderingEngine], templateStore: TemplateStore)(implicit ec: ExecutionContext) {
+  private def renderByName(data: JsObject, name: String): Future[Option[Throwable Either String]] = {
     templateStore.findTemplate(name).map(_.map(templateModel => renderByValue(data, templateModel.value, templateModel.engine)))
   }
 
-  def renderByValue(data: JsObject, value: String, engineEnum: EngineEnum): Throwable Either String = {
-    val renderingEngine = engineMap(engineEnum)
-    renderingEngine.render(data, value, None)
+  private def renderByValue(data: JsObject, value: String, engineEnum: EngineEnum): Throwable Either String = {
+    supportedEngines.get(engineEnum).map(_.render(data, value, None)) getOrElse Left(new IllegalStateException(s"No RenderingEngine found for engineEnum: $engineEnum"))
   }
 
   def render(renderRequest: RenderRequest): Future[Option[Throwable Either String]] = {

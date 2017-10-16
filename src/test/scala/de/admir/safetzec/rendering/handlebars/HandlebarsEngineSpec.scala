@@ -2,11 +2,10 @@ package de.admir.safetzec.rendering.handlebars
 
 import org.scalatest._
 import org.scalatest.EitherValues._
-import org.scalatest.mockito.MockitoSugar
 import spray.json._
 
 
-class HandlebarsEngineSpec extends FlatSpec with Matchers with MockitoSugar {
+class HandlebarsEngineSpec extends FlatSpec with Matchers {
   "renderByValue" should "render the given data and template" in {
     val fmEngine = new HandlebarsEngine()
 

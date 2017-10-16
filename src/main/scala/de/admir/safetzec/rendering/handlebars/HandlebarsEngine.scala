@@ -5,6 +5,8 @@ import spray.json.JsObject
 import com.github.jknack.handlebars.Handlebars
 import de.admir.safetzec.Json2JMap
 
+import java.util.{Map => JMap}
+
 import scala.util.Try
 
 class HandlebarsEngine() extends RenderingEngine with Json2JMap {
@@ -12,6 +14,7 @@ class HandlebarsEngine() extends RenderingEngine with Json2JMap {
 
   def render(data: JsObject, templateValue: String, nameOpt: Option[String] = None): Throwable Either String = Try {
     val template = handlebars.compileInline(templateValue)
-    template.apply(json2JMap(data))
+    val dataJMap: JMap[String, Object] = json2JMap(data)
+    template.apply(dataJMap)
   }.toEither
 }
