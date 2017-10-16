@@ -8,6 +8,7 @@ resolvers += "repo.jenkins-ci.org" at "http://repo.jenkins-ci.org/public"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
+  "com.typesafe.akka" %% "akka-http-testkit" % "10.0.10",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10",
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.19",
   "org.freemarker" % "freemarker" % "2.3.23",
@@ -21,7 +22,7 @@ libraryDependencies ++= Seq(
 
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4",
 
-  "org.mockito" % "mockito-all" % "1.10.19" % Test,
+  "org.mockito" % "mockito-core" % "2.8.47" % Test,
   "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
 )
