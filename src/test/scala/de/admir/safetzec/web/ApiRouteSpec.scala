@@ -45,4 +45,18 @@ class ApiRouteSpec extends FlatSpec with Matchers with ScalatestRouteTest with M
       status shouldBe StatusCodes.Created
     }
   }
+
+  "GET /api/templates/{name}" should "return 200 OK" in {
+    val renderingServiceMock = mock[RenderingService]
+    val templateStoreMock = mock[TemplateStore]
+    val templateModel = TemplateModel("t1", "some template value", FREEMARKER)
+    when(templateStoreMock.findTemplate(templateModel.name)).thenReturn(Future.successful(Some(templateModel)))
+
+    val apiRoute = new ApiRoute(renderingServiceMock, templateStoreMock)
+
+    Get(s"/api/templates/${templateModel.name}") ~> apiRoute.route ~> check {
+      status shouldBe StatusCodes.OK
+      responseAs[TemplateModel] shouldEqual templateModel
+    }
+  }
 }

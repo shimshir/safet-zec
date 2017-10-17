@@ -35,10 +35,15 @@ class ApiRoute(renderingService: RenderingService, templateStore: TemplateStore)
     }
 
   private def templatesRoute: Route =
-    path("templates") {
-      (post & entity(as[TemplateModel])) { templateModel =>
+    pathPrefix("templates") {
+      (post & pathEndOrSingleSlash & entity(as[TemplateModel])) { templateModel =>
         onSuccess(templateStore.saveTemplate(templateModel)) { _ =>
           complete(StatusCodes.Created)
+        }
+      } ~ (get & path(Segment)) { name =>
+        onSuccess(templateStore.findTemplate(name)) {
+          case Some(templateModel) => complete(StatusCodes.OK, templateModel)
+          case None => complete(StatusCodes.NotFound, s"Could not find a template for name: '$name'")
         }
       }
     }
