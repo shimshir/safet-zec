@@ -3,6 +3,7 @@ import {Component, State, Actions} from 'jumpsuit'
 import Modal from 'react-modal'
 import {Button, ControlLabel, Form, FormControl, FormGroup} from 'react-bootstrap'
 import axios from 'axios'
+import {getApiHost} from '../utils'
 
 const modalStyles = {
     overlay: {
@@ -35,14 +36,14 @@ const SaveTemplateModalState = State(
 const SaveTemplateModal = Component(
     {
         componentWillMount() {
-            this.setState({templateNameInput: this.props.loadedTemplateName, saveButtonText: ''});
+            this.setState({saveButtonText: '...'});
         },
         onTemplateNameInputChange(e) {
             this.setState({templateNameInput: e.target.value});
-            this.getSaveButtonText(e.target.value);
+            this.updateSaveButtonText(e.target.value);
         },
         saveTemplate() {
-            const url = `http://${window.location.hostname}:5151/api/templates`;
+            const url = `${getApiHost()}/api/templates`;
             const templateModel = {
                 name: this.state.templateNameInput,
                 value: this.props.templateText,
@@ -54,19 +55,26 @@ const SaveTemplateModal = Component(
             }).catch(error => {
             })
         },
-        getSaveButtonText(templateNameInput) {
-            axios.get(`http://${window.location.hostname}:5151/api/templates/${templateNameInput}`).then(res => {
+        updateSaveButtonText(templateNameInput) {
+            const url = `${getApiHost()}/api/templates/${templateNameInput}`;
+            axios.get(url).then(res => {
                 this.setState({saveButtonText: 'Overwrite'})
             }).catch(error => {
                 this.setState({saveButtonText: 'Save'})
             })
+        },
+        onAfterOpenModal() {
+            this.setState({templateNameInput: this.props.loadedTemplateName});
+            if (this.props.loadedTemplateName) {
+                this.setState({saveButtonText: 'Overwrite'});
+            }
         },
         render() {
             return (
                 <div>
                     <Modal
                         isOpen={this.props.isSaveTemplateModalOpen}
-                        onAfterOpen={() => this.getSaveButtonText(this.props.loadedTemplateName)}
+                        onAfterOpen={() => this.onAfterOpenModal(this.props.loadedTemplateName)}
                         onRequestClose={() => Actions.closeSaveTemplateModal()}
                         style={modalStyles}>
                         <h1>Save Template</h1>

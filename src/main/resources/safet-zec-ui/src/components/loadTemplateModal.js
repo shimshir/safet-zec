@@ -3,6 +3,7 @@ import {Component, State, Actions} from 'jumpsuit'
 import Modal from 'react-modal'
 import {FormControl, Table} from 'react-bootstrap'
 import axios from 'axios'
+import {getApiHost} from '../utils'
 
 const modalStyles = {
     overlay: {
@@ -42,13 +43,11 @@ const LoadTemplateModal = Component(
             this.setState({filterInput: ''})
         },
         fetchAllTemplateModels() {
-            const url = `http://${window.location.hostname}:5151/api/templates`;
+            const url = `${getApiHost()}/api/templates`;
             axios.get(url).then(res => Actions.setFetchedTemplateModels(res.data));
         },
         loadTemplate(templateModel) {
-            Actions.setTemplateEditorText(templateModel.value);
-            Actions.setTemplateName(templateModel.name);
-            Actions.setEngine(templateModel.engine);
+            Actions.loadTemplate(templateModel);
             Actions.closeLoadTemplateModal();
         },
         render() {

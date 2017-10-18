@@ -3,8 +3,9 @@ package de.admir.safetzec
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.typesafe.config.{Config, ConfigFactory}
+import akka.http.scaladsl.server.Directives._
 import de.admir.safetzec.rendering.RenderingService
-import de.admir.safetzec.web.{ApiRoute, HttpServer}
+import de.admir.safetzec.web.{ApiRoute, HttpServer, UiRoute}
 import de.admir.safetzec.models.EngineEnum._
 import de.admir.safetzec.rendering.dust.DustEngine
 import de.admir.safetzec.rendering.freemarker.FreemarkerEngine
@@ -20,7 +21,7 @@ object Main extends App {
 
   val httpServer = new HttpServer(config)
 
-  val templateStore = new MongoTemplateStore()
+  val templateStore = new InMemoryTemplateStore()
 
   val supportedEngines = Map(
     FREEMARKER -> new FreemarkerEngine(),
@@ -30,6 +31,7 @@ object Main extends App {
 
   val renderingService = new RenderingService(supportedEngines, templateStore)
   val apiRoute = new ApiRoute(renderingService, templateStore)
+  val uiRoute = new UiRoute()
 
-  httpServer.start(apiRoute.route)
+  httpServer.start(apiRoute.route ~ uiRoute.route)
 }

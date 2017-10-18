@@ -6,6 +6,8 @@ scalaVersion := "2.12.3"
 
 resolvers += "repo.jenkins-ci.org" at "http://repo.jenkins-ci.org/public"
 
+enablePlugins(JavaAppPackaging)
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.0.10",
   "com.typesafe.akka" %% "akka-http-testkit" % "10.0.10",

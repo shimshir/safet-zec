@@ -4,6 +4,7 @@ import AceEditor from 'react-ace'
 import {Row, Col, Navbar, Button} from 'react-bootstrap'
 import axios from 'axios'
 import Safet from './safet'
+import {getApiHost} from '../utils'
 
 import 'react-select/dist/react-select.css'
 
@@ -72,12 +73,15 @@ const EditorState = State(
             return {...state, templateName};
         },
         setResultEditorText(state, resultEditorText) {
-            console.log(resultEditorText);
             return {...state, resultEditorText};
         },
         setEngine(state, engine) {
             submitForRendering(state.dataEditorText, state.templateEditorText, engine);
             return {...state, engine};
+        },
+        loadTemplate(state, templateModel) {
+            submitForRendering(state.dataEditorText, templateModel.value, templateModel.engine);
+            return {...state, templateName: templateModel.name, templateEditorText: templateModel.value, engine: templateModel.engine};
         },
         setDataEditorWidth(state, size) {
             return {...state, dataEditorWidth: size}
@@ -110,7 +114,7 @@ const submitForRendering = (dataText, templateText, engine) => {
     if (engine) {
         try {
             const dataJson = JSON.parse(dataText);
-            const url = `http://${window.location.hostname}:5151/api/render`;
+            const url = `${getApiHost()}/api/render`;
             axios.post(url, {data: dataJson, template: {value: templateText, engine}}).then(res => {
                 Actions.setResultEditorText(res.data)
             }).catch(error => {

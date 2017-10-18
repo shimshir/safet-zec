@@ -3,6 +3,10 @@ import {Nav, Navbar, NavItem} from 'react-bootstrap'
 import Select from 'react-select'
 import {Actions} from 'jumpsuit'
 
+import freemarkerIcon from '../images/freemarker-icon.png'
+import handlebarsIcon from '../images/handlebars-icon.png'
+import dustIcon from '../images/dust-icon.png'
+
 const TemplateEditorNavbar = ({engine, onChangeEngine, templateName}) => {
     return (
         <Navbar className="editor-navbar">
@@ -27,20 +31,17 @@ const TemplateEditorNavbar = ({engine, onChangeEngine, templateName}) => {
                                 [
                                     {
                                         value: 'FREEMARKER',
-                                        label: <div><img style={{height: '16px'}}
-                                                         src='http://freemarker.org/favicon.png'
+                                        label: <div><img src={freemarkerIcon}
                                                          alt='freemarker'/> Freemarker</div>
                                     },
                                     {
                                         value: 'HANDLEBARS',
-                                        label: <div><img style={{height: '16px'}}
-                                                         src='http://handlebarsjs.com/images/favicon.png'
+                                        label: <div><img src={handlebarsIcon}
                                                          alt='handlebars'/> Handlebars</div>
                                     },
                                     {
                                         value: 'DUST',
-                                        label: <div><img style={{height: '16px'}}
-                                                         src='https://d30y9cdsu7xlg0.cloudfront.net/png/915985-200.png'
+                                        label: <div><img src={dustIcon}
                                                          alt='dust'/> Dust</div>
                                     }
                                 ]}
