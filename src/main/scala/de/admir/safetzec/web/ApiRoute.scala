@@ -36,7 +36,11 @@ class ApiRoute(renderingService: RenderingService, templateStore: TemplateStore)
 
   private def templatesRoute: Route =
     pathPrefix("templates") {
-      (post & pathEndOrSingleSlash & entity(as[TemplateModel])) { templateModel =>
+      (get & pathEndOrSingleSlash) {
+        onSuccess(templateStore.templates) { templates =>
+          complete(StatusCodes.OK, templates)
+        }
+      } ~ (post & pathEndOrSingleSlash & entity(as[TemplateModel])) { templateModel =>
         onSuccess(templateStore.saveTemplate(templateModel)) { _ =>
           complete(StatusCodes.Created)
         }

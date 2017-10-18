@@ -50,3 +50,8 @@ li.template-name-input > a {
 .btn-default {
     background-color: #e6e6e6;
 }
+
+div.template-name {
+    display: inline-block;
+    padding: 15px;
+}

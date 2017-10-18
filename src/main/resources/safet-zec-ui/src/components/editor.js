@@ -1,16 +1,18 @@
 import React from 'react'
 import {Component, State, Actions} from 'jumpsuit'
 import AceEditor from 'react-ace'
-import {Row, Col, Button, Navbar, Nav, NavItem, NavDropdown, MenuItem, FormControl} from "react-bootstrap"
+import {Row, Col, Navbar} from "react-bootstrap"
 import axios from 'axios'
 import Safet from './safet'
-import Select from 'react-select'
+
 import 'react-select/dist/react-select.css'
 
 import 'brace/mode/json'
 import 'brace/mode/ftl'
 import 'brace/mode/plain_text'
 import 'brace/theme/tomorrow_night'
+import DataEditor from "./dataEditor"
+import TemplateEditor from "./templateEditor";
 
 const exampleData = {
     name: "Admir",
@@ -46,6 +48,7 @@ const EditorState = State(
         initial: {
             dataEditorText: "",
             templateEditorText: "",
+            templateName: "somename.ftl",
             resultEditorText: "",
             engine: "FREEMARKER",
             dataEditorHiddenClass: '',
@@ -61,6 +64,9 @@ const EditorState = State(
         },
         setTemplateEditorText(state, templateEditorText) {
             return {...state, templateEditorText};
+        },
+        setTemplateName(state, templateName) {
+            return {...state, templateName};
         },
         setResultEditorText(state, resultEditorText) {
             return {...state, resultEditorText};
@@ -111,16 +117,14 @@ const Editor = Component(
         },
         changeEngine(option) {
             const engine = !option ? null : option.value;
-            Actions.setTemplateEditorText(exampleTemplateMap[engine]);
             Actions.setEngine(engine);
-            this.submitForRendering(this.props.dataEditorText, exampleTemplateMap[engine], engine);
+            this.submitForRendering(this.props.dataEditorText, this.props.templateEditorText, engine);
         },
         submitForRendering(dataText, templateText, engine) {
             if (engine) {
                 try {
                     const dataJson = JSON.parse(dataText);
                     const url = `http://${window.location.hostname}:5151/api/render`;
-                    console.log(url);
                     axios.post(url, {data: dataJson, template: {value: templateText, engine}}).then(res => {
                         Actions.setResultEditorText(res.data)
                     }).catch(error => {
@@ -170,127 +174,27 @@ const Editor = Component(
                 <div>
                     {/*<Safet initialTop={100} initialRight={0}/>*/}
                     <Row>
-                        <Col xs={this.props.dataEditorWidth} className={this.props.dataEditorHiddenClass}>
-                            <Navbar className="editor-navbar">
-                                <Navbar.Header>
-                                    <Navbar.Brand>
-                                        Data
-                                    </Navbar.Brand>
-                                </Navbar.Header>
-                            </Navbar>
-                            <div style={{height: this.props.dataEditorHeight}}>
-                                <div style={{height: '100%', width: '100%', display: 'inline-block'}}>
-                                    <AceEditor
-                                        value={this.props.dataEditorText}
-                                        width="100%"
-                                        height="100%"
-                                        fontSize={14}
-                                        mode="json"
-                                        theme="tomorrow_night"
-                                        onChange={this.changeData}
-                                        name="data-editor"
-                                        style={{zIndex: '0'}}
-                                        editorProps={{$blockScrolling: true}}
-                                        setOptions={{showInvisibles: true}}
-                                    />
-                                </div>
-                                <div style={{
-                                    width: '12px',
-                                    display: 'inline-block',
-                                    verticalAlign: 'top',
-                                    height: this.props.dataEditorHeight,
-                                    position: 'absolute'
-                                }}>
-                                    <Button id="vertical-data-button" style={{width: '100%', height: '100%', padding: 'inherit'}}
-                                            onClick={this.toggleDataEditorWidth}/>
-                                </div>
-                            </div>
-                            <Button id="horizontal-data-button" style={{width: '100%', height: '12px', padding: '0', verticalAlign: 'top'}}
-                                    onClick={this.toggleDataEditorHeight}/>
-                        </Col>
-                        <Col xs={this.props.templateEditorWidth} className={this.props.templateEditorHiddenClass}>
-                            <Navbar className="editor-navbar">
-                                <Navbar.Header>
-                                    <Navbar.Brand>
-                                        Template
-                                    </Navbar.Brand>
-                                </Navbar.Header>
-                                <Nav>
-                                    <NavItem>Save</NavItem>
-                                    <NavItem>Load</NavItem>
-                                    <NavItem className="template-name-input">
-                                        <FormControl
-                                            type="text"
-                                            value="template.xyz"
-                                            onChange={x => console.log(x)}
-                                        />
-                                    </NavItem>
-                                </Nav>
-                                <Nav pullRight>
-                                    <NavItem className="engine-selector-navitem">
-                                        <div style={{width: '150px', marginRight: '10px'}}>
-                                            <Select
-                                                style={{cursor: 'pointer'}}
-                                                name="form-field-name"
-                                                value={this.props.engine}
-                                                options={
-                                                    [
-                                                        {
-                                                            value: 'FREEMARKER',
-                                                            label: <div><img style={{height: '16px'}}
-                                                                             src='http://freemarker.org/favicon.png'
-                                                                             alt='freemarker'/> Freemarker</div>
-                                                        },
-                                                        {
-                                                            value: 'HANDLEBARS',
-                                                            label: <div><img style={{height: '16px'}}
-                                                                             src='http://handlebarsjs.com/images/favicon.png'
-                                                                             alt='handlebars'/> Handlebars</div>
-                                                        },
-                                                        {
-                                                            value: 'DUST',
-                                                            label: <div><img style={{height: '16px'}}
-                                                                             src='https://d30y9cdsu7xlg0.cloudfront.net/png/915985-200.png'
-                                                                             alt='dust'/> Dust</div>
-                                                        }
-                                                    ]}
-                                                onChange={this.changeEngine}
-                                            />
-                                        </div>
-                                    </NavItem>
-                                </Nav>
-                            </Navbar>
-                            <div style={{height: this.props.templateEditorHeight}}>
-                                <div style={{
-                                    width: '12px',
-                                    display: 'inline-block',
-                                    verticalAlign: 'top',
-                                    height: '275px',
-                                    position: 'absolute',
-                                    marginLeft: '-12px'
-                                }}>
-                                    <Button id="vertical-template-button" style={{width: '100%', height: this.props.templateEditorHeight, padding: 'inherit'}}
-                                            onClick={this.toggleTemplateEditorWidth}/>
-                                </div>
-                                <div style={{height: '100%', width: '100%', display: 'inline-block'}}>
-                                    <AceEditor
-                                        value={this.props.templateEditorText}
-                                        width="100%"
-                                        height="100%"
-                                        fontSize={14}
-                                        mode="ftl"
-                                        theme="tomorrow_night"
-                                        onChange={this.changeTemplate}
-                                        name="template-editor"
-                                        style={{zIndex: '0'}}
-                                        editorProps={{$blockScrolling: true}}
-                                        setOptions={{showInvisibles: true}}
-                                    />
-                                </div>
-                            </div>
-                            <Button id="horizontal-template-button" style={{width: '100%', height: '12px', padding: '0', verticalAlign: 'top'}}
-                                    onClick={this.toggleTemplateEditorHeight}/>
-                        </Col>
+                        <DataEditor
+                            dataEditorText={this.props.dataEditorText}
+                            onChangeDataText={this.changeData}
+                            dataEditorWidth={this.props.dataEditorWidth}
+                            dataEditorHeight={this.props.dataEditorHeight}
+                            dataEditorHiddenClass={this.props.dataEditorHiddenClass}
+                            toggleDataEditorWidth={this.toggleDataEditorWidth}
+                            toggleDataEditorHeight={this.toggleDataEditorHeight}
+                        />
+                        <TemplateEditor
+                            templateEditorText={this.props.templateEditorText}
+                            templateName={this.props.templateName}
+                            onChangeTemplateText={this.changeTemplate}
+                            engine={this.props.engine}
+                            onChangeEngine={this.changeEngine}
+                            templateEditorWidth={this.props.templateEditorWidth}
+                            templateEditorHeight={this.props.templateEditorHeight}
+                            templateEditorHiddenClass={this.props.templateEditorHiddenClass}
+                            toggleTemplateEditorWidth={this.toggleTemplateEditorWidth}
+                            toggleTemplateEditorHeight={this.toggleTemplateEditorHeight}
+                        />
                     </Row>
                     <Row>
                         <Col xs={12}>

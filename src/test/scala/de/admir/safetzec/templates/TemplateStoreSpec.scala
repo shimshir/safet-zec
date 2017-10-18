@@ -11,25 +11,24 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-class TemplateStoreSpec extends FlatSpec with Matchers with MongoEmbedDatabase with BeforeAndAfter {
+class TemplateStoreSpec extends FlatSpec with Matchers with MongoEmbedDatabase {
   var mongoProps: MongodProps = _
   val mongoPort = 12345
 
-  before {
-    mongoProps = mongoStart(mongoPort)
-  }
-
-  after {
-    mongoStop(mongoProps)
+  "InMemoryTemplateStore" should "save and find templates" in {
+    val inMemoryTemplateStore = new InMemoryTemplateStore()
+    testTemplateStore(inMemoryTemplateStore)
   }
 
   "MongoTemplateStore" should "save and find templates" in {
+    mongoProps = mongoStart(mongoPort)
     val driver = MongoDriver()
     val parsedUri = MongoConnection.parseURI(s"mongodb://localhost:$mongoPort")
     val connectionTry = parsedUri.map(driver.connection)
 
     val mongoTemplateStore = new MongoTemplateStore(connectionTry.get)
     testTemplateStore(mongoTemplateStore)
+    mongoStop(mongoProps)
   }
 
   "GithubTemplateStore" should "save and find templates" in pendingUntilFixed {
@@ -50,6 +49,7 @@ class TemplateStoreSpec extends FlatSpec with Matchers with MongoEmbedDatabase w
     Await.result(templateStore.findTemplate("testTemplate1.ftl"), 5.seconds) shouldBe Some(templateModel1)
     Await.result(templateStore.findTemplate("testTemplate2.ftl"), 5.seconds) shouldBe Some(templateModel2)
     Await.result(templateStore.findTemplate("someNoneExistingTemplateName"), 5.seconds) shouldBe None
+    Await.result(templateStore.templates, 5.seconds) should contain only(templateModel1, templateModel2)
   }
 
 }

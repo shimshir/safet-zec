@@ -7,13 +7,15 @@ import com.github.simplyscala.MongoEmbedDatabase
 import de.admir.safetzec.models.{EngineEnum, TemplateModel}
 import org.kohsuke.github.GitHub
 import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.api.{MongoConnection, MongoDriver}
+import reactivemongo.api.{Cursor, MongoConnection, MongoDriver}
 import reactivemongo.bson.document
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
 trait TemplateStore {
+  def templates: Future[Seq[TemplateModel]]
+
   def saveTemplate(templateModel: TemplateModel): Future[Throwable Either String]
 
   def findTemplate(name: String): Future[Option[TemplateModel]]
@@ -21,6 +23,10 @@ trait TemplateStore {
 
 class InMemoryTemplateStore() extends TemplateStore {
   private val templateMap = new ConcurrentHashMap[String, TemplateModel]()
+
+  import scala.collection.JavaConverters._
+
+  def templates: Future[Seq[TemplateModel]] = Future.successful(templateMap.values().asScala.toSeq)
 
   def saveTemplate(templateModel: TemplateModel): Future[Throwable Either String] = {
     templateMap.put(templateModel.name, templateModel)
@@ -39,6 +45,10 @@ class MongoTemplateStore(mongoConnection: MongoConnection)(implicit ec: Executio
 
   def this()(implicit ec: ExecutionContext) {
     this(DefaultMongoTemplateStore.createConnection(12345))
+  }
+
+  def templates: Future[Seq[TemplateModel]] = {
+    tmplCollFut.flatMap(_.find(document()).cursor().collect(-1, Cursor.ContOnError[Seq[TemplateModel]]()))
   }
 
   // TODO: Handle updates with PUT requests in the route, not here
@@ -87,6 +97,8 @@ object DefaultMongoTemplateStore extends MongoEmbedDatabase with SLF4JLogging {
 
 class GithubTemplateStore(github: GitHub, repoName: String, templateFolder: String)(implicit ec: ExecutionContext) extends TemplateStore with SLF4JLogging {
   private val repo = github.getRepository(repoName)
+
+  def templates: Future[Seq[TemplateModel]] = ???
 
   def saveTemplate(templateModel: TemplateModel): Future[Throwable Either String] = {
     val fileExtension = extractExtension(templateModel.name)
