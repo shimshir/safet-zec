@@ -6,7 +6,8 @@ import './css/base.css'
 
 import {EditorState} from './components/editor'
 import {SaveTemplateModalState} from './components/saveTemplateModal'
+import {LoadTemplateModalState} from './components/loadTemplateModal'
 
-const globalState = {editor: EditorState, saveTemplateModal: SaveTemplateModalState};
+const globalState = {editor: EditorState, saveTemplateModal: SaveTemplateModalState, loadTemplateModal: LoadTemplateModalState};
 
 Render(globalState, <App/>);

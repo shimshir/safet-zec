@@ -3,6 +3,7 @@ import {Button, Col} from "react-bootstrap"
 import AceEditor from 'react-ace'
 import TemplateEditorNavbar from './templateEditorNavbar'
 import {SaveTemplateModal} from './saveTemplateModal'
+import {LoadTemplateModal} from './loadTemplateModal'
 
 
 const TemplateEditor = ({
@@ -20,6 +21,7 @@ const TemplateEditor = ({
     return (
         <Col xs={templateEditorWidth} className={templateEditorHiddenClass}>
             <SaveTemplateModal/>
+            <LoadTemplateModal/>
             <TemplateEditorNavbar engine={engine} onChangeEngine={onChangeEngine} templateName={templateName}/>
             <div style={{height: templateEditorHeight}}>
                 <div style={{

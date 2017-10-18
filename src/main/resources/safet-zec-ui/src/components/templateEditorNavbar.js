@@ -13,7 +13,7 @@ const TemplateEditorNavbar = ({engine, onChangeEngine, templateName}) => {
             </Navbar.Header>
             <Nav>
                 <NavItem onClick={() => Actions.openSaveTemplateModal()}>Save</NavItem>
-                <NavItem>Load</NavItem>
+                <NavItem onClick={() => Actions.openLoadTemplateModal()}>Load</NavItem>
             </Nav>
             <div className="template-name">{templateName}</div>
             <Nav pullRight>

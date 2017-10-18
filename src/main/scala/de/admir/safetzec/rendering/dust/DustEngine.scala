@@ -28,7 +28,7 @@ class DustEngine() extends RenderingEngine {
       |}
     """.stripMargin
 
-  def render(data: JsObject, templateValue: String, nameOpt: Option[String] = None): Throwable Either String = {
+  def render(data: JsObject, templateValue: String, nameOpt: Option[String] = None): Throwable Either String = synchronized {
     val writer = new StringWriter
     val bindings = new SimpleBindings
     bindings.put("templateName", nameOpt.getOrElse("placeholderName"))

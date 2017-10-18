@@ -4,7 +4,7 @@ body {
 
 @media (min-width: 1200px) {
     .container.content-container {
-        width: 1370px;
+        width: 1270px;
     }
 }
 
@@ -54,4 +54,12 @@ li.template-name-input > a {
 div.template-name {
     display: inline-block;
     padding: 15px;
+}
+
+.ellipsis {
+    display:inline-block;
+    width:400px;
+    white-space: nowrap;
+    overflow:hidden !important;
+    text-overflow: ellipsis;
 }

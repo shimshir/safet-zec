@@ -1,7 +1,7 @@
 import React from 'react'
 import {Component, State, Actions} from 'jumpsuit'
 import AceEditor from 'react-ace'
-import {Row, Col, Navbar} from "react-bootstrap"
+import {Row, Col, Navbar, Button} from 'react-bootstrap'
 import axios from 'axios'
 import Safet from './safet'
 
@@ -48,7 +48,7 @@ const EditorState = State(
         initial: {
             dataEditorText: "",
             templateEditorText: "",
-            templateName: "somename.ftl",
+            templateName: null,
             resultEditorText: "",
             engine: "FREEMARKER",
             dataEditorHiddenClass: '',
@@ -56,22 +56,27 @@ const EditorState = State(
             resultEditorHiddenClass: '',
             dataEditorHeight: '275px',
             templateEditorHeight: '275px',
+            resultEditorHeight: '275px',
             dataEditorWidth: 6,
             templateEditorWidth: 6
         },
         setDataEditorText(state, dataEditorText) {
+            submitForRendering(dataEditorText, state.templateEditorText, state.engine);
             return {...state, dataEditorText};
         },
         setTemplateEditorText(state, templateEditorText) {
+            submitForRendering(state.dataEditorText, templateEditorText, state.engine);
             return {...state, templateEditorText};
         },
         setTemplateName(state, templateName) {
             return {...state, templateName};
         },
         setResultEditorText(state, resultEditorText) {
+            console.log(resultEditorText);
             return {...state, resultEditorText};
         },
         setEngine(state, engine) {
+            submitForRendering(state.dataEditorText, state.templateEditorText, engine);
             return {...state, engine};
         },
         setDataEditorWidth(state, size) {
@@ -86,6 +91,9 @@ const EditorState = State(
         setTemplateEditorHeight(state, size) {
             return {...state, templateEditorHeight: size}
         },
+        setResultEditorHeight(state, size) {
+            return {...state, resultEditorHeight: size}
+        },
         setDataEditorHiddenClass(state, className) {
             return {...state, dataEditorHiddenClass: className}
         },
@@ -98,6 +106,24 @@ const EditorState = State(
     }
 );
 
+const submitForRendering = (dataText, templateText, engine) => {
+    if (engine) {
+        try {
+            const dataJson = JSON.parse(dataText);
+            const url = `http://${window.location.hostname}:5151/api/render`;
+            axios.post(url, {data: dataJson, template: {value: templateText, engine}}).then(res => {
+                Actions.setResultEditorText(res.data)
+            }).catch(error => {
+                if (error.response) {
+                    Actions.setResultEditorText(error.response.data)
+                }
+            })
+        } catch (err) {
+            Actions.setResultEditorText(err.stack);
+        }
+    }
+};
+
 const Editor = Component(
     {
         componentWillMount() {
@@ -105,37 +131,10 @@ const Editor = Component(
             const initialTemplateText = exampleTemplateMap[this.props.engine];
             Actions.setDataEditorText(initialDataText);
             Actions.setTemplateEditorText(initialTemplateText);
-            setTimeout(() => this.submitForRendering(initialDataText, initialTemplateText, this.props.engine), 1000);
-        },
-        changeData(text) {
-            Actions.setDataEditorText(text);
-            this.submitForRendering(text, this.props.templateEditorText, this.props.engine);
-        },
-        changeTemplate(text) {
-            Actions.setTemplateEditorText(text);
-            this.submitForRendering(this.props.dataEditorText, text, this.props.engine);
         },
         changeEngine(option) {
             const engine = !option ? null : option.value;
             Actions.setEngine(engine);
-            this.submitForRendering(this.props.dataEditorText, this.props.templateEditorText, engine);
-        },
-        submitForRendering(dataText, templateText, engine) {
-            if (engine) {
-                try {
-                    const dataJson = JSON.parse(dataText);
-                    const url = `http://${window.location.hostname}:5151/api/render`;
-                    axios.post(url, {data: dataJson, template: {value: templateText, engine}}).then(res => {
-                        Actions.setResultEditorText(res.data)
-                    }).catch(error => {
-                        if (error.response) {
-                            Actions.setResultEditorText(error.response.data)
-                        }
-                    })
-                } catch (err) {
-                    Actions.setResultEditorText(err.stack);
-                }
-            }
         },
         toggleDataEditorWidth() {
             if (this.props.templateEditorHiddenClass === 'hidden') {
@@ -169,6 +168,13 @@ const Editor = Component(
                 Actions.setTemplateEditorHeight('275px');
             }
         },
+        toggleResultEditorHeight() {
+            if (this.props.resultEditorHeight === '275px') {
+                Actions.setResultEditorHeight('550px');
+            } else {
+                Actions.setResultEditorHeight('275px');
+            }
+        },
         render() {
             return (
                 <div>
@@ -176,7 +182,7 @@ const Editor = Component(
                     <Row>
                         <DataEditor
                             dataEditorText={this.props.dataEditorText}
-                            onChangeDataText={this.changeData}
+                            onChangeDataText={text => Actions.setDataEditorText(text)}
                             dataEditorWidth={this.props.dataEditorWidth}
                             dataEditorHeight={this.props.dataEditorHeight}
                             dataEditorHiddenClass={this.props.dataEditorHiddenClass}
@@ -186,7 +192,7 @@ const Editor = Component(
                         <TemplateEditor
                             templateEditorText={this.props.templateEditorText}
                             templateName={this.props.templateName}
-                            onChangeTemplateText={this.changeTemplate}
+                            onChangeTemplateText={text => Actions.setTemplateEditorText(text)}
                             engine={this.props.engine}
                             onChangeEngine={this.changeEngine}
                             templateEditorWidth={this.props.templateEditorWidth}
@@ -208,7 +214,7 @@ const Editor = Component(
                             <AceEditor
                                 value={this.props.resultEditorText}
                                 width="100%"
-                                height="275px"
+                                height={this.props.resultEditorHeight}
                                 fontSize={14}
                                 mode="plain_text"
                                 theme="tomorrow_night"
@@ -218,6 +224,8 @@ const Editor = Component(
                                 editorProps={{$blockScrolling: true}}
                                 setOptions={{showInvisibles: true}}
                             />
+                            <Button id="horizontal-result-button" style={{width: '100%', height: '12px', padding: '0', verticalAlign: 'top'}}
+                                    onClick={this.toggleResultEditorHeight}/>
                         </Col>
                     </Row>
                 </div>

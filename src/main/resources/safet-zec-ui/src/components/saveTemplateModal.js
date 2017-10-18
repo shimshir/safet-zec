@@ -62,15 +62,6 @@ const SaveTemplateModal = Component(
             })
         },
         render() {
-
-            let buttonText = '  Save   ';
-            if (this.props.loadedTemplateName !== null &&
-                this.state.templateNameInput !== null &&
-                this.props.loadedTemplateName.trim() === this.state.templateNameInput.trim() &&
-                this.state.templateNameInput !== '') {
-                buttonText = 'Overwrite';
-            }
-
             return (
                 <div>
                     <Modal
@@ -80,7 +71,10 @@ const SaveTemplateModal = Component(
                         style={modalStyles}>
                         <h1>Save Template</h1>
                         <hr/>
-                        <Form inline>
+                        <form className="form-inline" onSubmit={e => {
+                            e.preventDefault();
+                            this.saveTemplate();
+                        }}>
                             <FormGroup>
                                 <ControlLabel>Name</ControlLabel>
                                 {' '}
@@ -91,7 +85,7 @@ const SaveTemplateModal = Component(
                             <Button style={{minWidth: '86px'}} onClick={this.saveTemplate}>
                                 {this.state.saveButtonText}
                             </Button>
-                        </Form>
+                        </form>
                     </Modal>
                 </div>
             );
