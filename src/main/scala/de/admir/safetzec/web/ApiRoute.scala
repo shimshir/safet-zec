@@ -36,22 +36,28 @@ class ApiRoute(renderingService: RenderingService, templateStore: TemplateStore)
 
   private def templatesRoute: Route =
     pathPrefix("templates") {
-      (get & pathEndOrSingleSlash) {
+      (get & pathEnd) {
         onSuccess(templateStore.templates) { templates =>
           complete(StatusCodes.OK, templates)
         }
-      } ~ (post & pathEndOrSingleSlash & entity(as[TemplateModel])) { templateModel =>
-        onSuccess(templateStore.saveTemplate(templateModel)) {
-          case Right(_) =>
-            complete(StatusCodes.Created)
-          case Left(t) =>
-            complete(StatusCodes.InternalServerError, t.getMessage)
-        }
-      } ~ (get & path(Segment)) { name =>
-        onSuccess(templateStore.findTemplate(name)) {
-          case Some(templateModel) => complete(StatusCodes.OK, templateModel)
-          case None => complete(StatusCodes.NotFound, s"Could not find a template for name: '$name'")
-        }
+      } ~ (post & pathEndOrSingleSlash & entity(as[TemplateModel])) {
+        case TemplateModel("", _, _) =>
+          complete(StatusCodes.BadRequest, "Please provide a template name.")
+        case templateModel =>
+          onSuccess(templateStore.saveTemplate(templateModel)) {
+            case Right(_) =>
+              complete(StatusCodes.Created)
+            case Left(t) =>
+              complete(StatusCodes.InternalServerError, t.getMessage)
+          }
+      } ~ (get & path(Segment.?)) {
+        case Some(name) =>
+          onSuccess(templateStore.findTemplate(name)) {
+            case Some(templateModel) => complete(StatusCodes.OK, templateModel)
+            case None => complete(StatusCodes.NotFound, s"Could not find a template for name: '$name'")
+          }
+        case None =>
+          complete(StatusCodes.NotFound, "Please provide a template name.")
       }
     }
 

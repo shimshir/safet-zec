@@ -1,7 +1,7 @@
 package de.admir.safetzec.templates
 
 
-import de.admir.safetzec.models.TemplateModel
+import de.admir.safetzec.models.{EngineEnum, TemplateModel}
 import scalikejdbc.DBSession
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -11,18 +11,18 @@ import scala.util.Try
 
 class SqlTemplateStore()(implicit dbSession: DBSession, ec: ExecutionContext) extends TemplateStore {
 
-  private val tm = TemplateModel.syntax("tm")
-  private val tmColumn = TemplateModel.column
+  private val tm = TemplateModelSyntax.syntax("tm")
+  private val tmColumn = TemplateModelSyntax.column
 
   def templates: Future[Seq[TemplateModel]] = Future {
-    withSQL(select.from(TemplateModel as tm))
-      .map(TemplateModel(tm)).list.apply()
+    withSQL(select.from(TemplateModelSyntax as tm))
+      .map(TemplateModelSyntax(tm)).list.apply()
   }
 
   def saveTemplate(templateModel: TemplateModel): Future[Throwable Either String] = Future {
     Try {
       withSQL {
-        insert.into(TemplateModel)
+        insert.into(TemplateModelSyntax)
           .namedValues(
             tmColumn.name -> templateModel.name,
             tmColumn.value -> templateModel.value,
@@ -34,11 +34,19 @@ class SqlTemplateStore()(implicit dbSession: DBSession, ec: ExecutionContext) ex
 
   def findTemplate(name: String): Future[Option[TemplateModel]] = Future {
     withSQL {
-      select.from(TemplateModel as tm)
+      select.from(TemplateModelSyntax as tm)
         .where
         .eq(tm.name, name)
-    }.map(TemplateModel(tm)).single.apply()
+    }.map(TemplateModelSyntax(tm)).single.apply()
   }
+}
+
+object TemplateModelSyntax extends SQLSyntaxSupport[TemplateModel] {
+  override val tableName = "template_model"
+  def apply(c: SyntaxProvider[TemplateModel])(rs: WrappedResultSet): TemplateModel =
+    apply(c.resultName)(rs)
+  def apply(c: ResultName[TemplateModel])(rs: WrappedResultSet): TemplateModel =
+    TemplateModel(rs.string(c.name), rs.string(c.value), EngineEnum.withName(rs.string(c.engine)))
 }
 
 object H2SqlTemplateStore {
