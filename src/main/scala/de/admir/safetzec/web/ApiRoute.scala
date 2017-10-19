@@ -41,8 +41,11 @@ class ApiRoute(renderingService: RenderingService, templateStore: TemplateStore)
           complete(StatusCodes.OK, templates)
         }
       } ~ (post & pathEndOrSingleSlash & entity(as[TemplateModel])) { templateModel =>
-        onSuccess(templateStore.saveTemplate(templateModel)) { _ =>
-          complete(StatusCodes.Created)
+        onSuccess(templateStore.saveTemplate(templateModel)) {
+          case Right(_) =>
+            complete(StatusCodes.Created)
+          case Left(t) =>
+            complete(StatusCodes.InternalServerError, t.getMessage)
         }
       } ~ (get & path(Segment)) { name =>
         onSuccess(templateStore.findTemplate(name)) {

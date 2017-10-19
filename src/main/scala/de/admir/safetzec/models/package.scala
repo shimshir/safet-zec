@@ -22,6 +22,18 @@ package object models {
 
   case class TemplateModel(name: String, value: String, engine: EngineEnum)
 
+  import scalikejdbc._
+
+  object TemplateModel extends SQLSyntaxSupport[TemplateModel] {
+    //def apply(rs: WrappedResultSet) =
+    // TemplateModel(rs.string("name"), rs.string("value"), EngineEnum.withName(rs.string("engine")))
+    def apply(c: SyntaxProvider[TemplateModel])(rs: WrappedResultSet): TemplateModel =
+      apply(c.resultName)(rs)
+    def apply(c: ResultName[TemplateModel])(rs: WrappedResultSet): TemplateModel =
+      TemplateModel(rs.string(c.name), rs.string(c.value), EngineEnum.withName(rs.string(c.engine)))
+  }
+
+
   object JsonProtocols extends DefaultJsonProtocol {
     implicit lazy val engineEnumFormat = new RootJsonFormat[EngineEnum] {
       def write(obj: EngineEnum) = JsString(obj.toString)
@@ -34,7 +46,7 @@ package object models {
     implicit lazy val templateDataFormat = jsonFormat3(TemplateData)
     implicit lazy val renderRequestFormat = jsonFormat2(RenderRequest)
 
-    implicit lazy val templateModelFormat = jsonFormat3(TemplateModel)
+    implicit lazy val templateModelFormat = jsonFormat3(TemplateModel.apply)
   }
 
   object MongoProtocols {

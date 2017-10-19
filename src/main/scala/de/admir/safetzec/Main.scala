@@ -10,7 +10,7 @@ import de.admir.safetzec.models.EngineEnum._
 import de.admir.safetzec.rendering.dust.DustEngine
 import de.admir.safetzec.rendering.freemarker.FreemarkerEngine
 import de.admir.safetzec.rendering.handlebars.HandlebarsEngine
-import de.admir.safetzec.templates.{InMemoryTemplateStore, MongoTemplateStore}
+import de.admir.safetzec.templates.{H2SqlTemplateStore, InMemoryTemplateStore, MongoTemplateStore, PostgreSqlTemplateStore}
 
 object Main extends App {
   implicit val actorSystem = ActorSystem("safet-zec")
@@ -21,7 +21,7 @@ object Main extends App {
 
   val httpServer = new HttpServer(config)
 
-  val templateStore = new InMemoryTemplateStore()
+  val templateStore = PostgreSqlTemplateStore.herokuStore
 
   val supportedEngines = Map(
     FREEMARKER -> new FreemarkerEngine(),

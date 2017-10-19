@@ -20,7 +20,10 @@ libraryDependencies ++= Seq(
   "org.reactivemongo" %% "reactivemongo" % "0.12.6",
   "org.kohsuke" % "github-api" % "1.89",
   "ch.qos.logback" % "logback-classic" % "1.2.3",
-  "commons-io" % "commons-io" % "1.4" % Provided,
+  "commons-io" % "commons-io" % "1.4",
+  "org.scalikejdbc" %% "scalikejdbc" % "3.1.0",
+  "com.h2database" % "h2" % "1.4.196",
+  "org.postgresql" % "postgresql" % "42.1.4",
 
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4",
 
